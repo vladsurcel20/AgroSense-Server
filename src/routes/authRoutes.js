@@ -6,15 +6,16 @@ const jwt = require("jsonwebtoken");
 const router = Router();
 
 router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
+
     try {
-        const user = await User.findOne({ where: { username } });
+        const user = await User.findOne({ where: { email } });
         if (!user || !await bcrypt.compare(password, user.password)) {
             return res.status(401).json({ message: "Usernmame or password is inccorect" });
         }
         
         const token = jwt.sign(
-            { id: user.id, username: user.username },
+            { id: user.id, email: user.email },
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
           );
