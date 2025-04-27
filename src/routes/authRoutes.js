@@ -23,10 +23,20 @@ router.post('/login', async (req, res) => {
         res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
         maxAge: 3600000, //1h in milliseconds
         });
 
-        res.status(200).json({ message: "Logged in successfully"});
+        res.status(200).json({ 
+            message: "Logged in successfully", 
+            user: { 
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.roleId,
+            }
+        });
     } catch (err) {
         console.error("Error logging in", err);
         res.status(500).json({ message: "Internal server error" });    
@@ -51,5 +61,14 @@ router.post('/register', async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
+router.post('/logout', (req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      });
+      res.status(200).json({ message: 'Logged out successfully' });
+})
 
 module.exports = router;

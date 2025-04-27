@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../config/connection");
 
 const UserRole = sequelize.define("UserRole", {
@@ -12,9 +12,19 @@ const UserRole = sequelize.define("UserRole", {
         allowNull: false,
         unique: true,
     },
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        onUpdate: Sequelize.literal("CURRENT_TIMESTAMP"),
+      }
 }, {
     tableName: "user_roles",
-    timestamps: false
 });
 
 module.exports = UserRole;

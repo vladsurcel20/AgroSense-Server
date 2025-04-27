@@ -12,7 +12,8 @@ const verifyToken = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Invalid token" });
+    res.clearCookie('token');
+    return res.status(401).json({ message: "Invalid or expired session" });
   }
 };
 
