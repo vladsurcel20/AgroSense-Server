@@ -7,20 +7,28 @@ const GreenhousePreference = sequelize.define("GreenhousePreference", {
         type: DataTypes.INTEGER,
         primaryKey: true,
     },
-    name: {
-        type: DataTypes.STRING(50),
-        allowNull: false,
-    },
-    minTemp: {
+    minTempAir: {
         type: DataTypes.FLOAT,
     },
-    maxTemp: {
+    maxTempAir: {
         type: DataTypes.FLOAT,
     },
-    minHum: {
+    minTempSoil: {
         type: DataTypes.FLOAT,
     },
-    maxHum: {
+    maxTempSoil: {
+        type: DataTypes.FLOAT,
+    },
+    minHumAir: {
+        type: DataTypes.FLOAT,
+    },
+    maxHumAir: {
+        type: DataTypes.FLOAT,
+    },
+    minHumSoil: {
+        type: DataTypes.FLOAT,
+    },
+    maxHumSoil: {
         type: DataTypes.FLOAT,
     },
     minLight: {
@@ -29,6 +37,10 @@ const GreenhousePreference = sequelize.define("GreenhousePreference", {
     maxLight: {
         type: DataTypes.FLOAT,
     },
+    isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    }
     }, {
         tableName: "greenhouse_preferences",
     });

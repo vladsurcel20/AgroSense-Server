@@ -1,12 +1,12 @@
-const { GreenHouse, Location } = require('../models/associations')
+const { GreenHouse, Location, Sensor, ControlDevice, Culture} = require('../models/associations')
+const { Sequelize } = require('sequelize');
 
-// Get all greenhouses for a location
 exports.getAllGreenhouses = async (req, res) => {
   try {
     const { locationId } = req.query;
+    const includeCount = req.query.count === 'true';
     const userId = req.user?.id;
     
-    // First verify that the location belongs to the user
     const location = await Location.findOne({
       where: { 
         id: locationId,
@@ -24,7 +24,33 @@ exports.getAllGreenhouses = async (req, res) => {
         locationId: locationId,
         isActive: true 
       },
-      order: [['name', 'ASC']]
+      attributes: {
+        include: includeCount ? [
+          [Sequelize.fn("COUNT", Sequelize.fn("DISTINCT", Sequelize.col("sensors.id"))), "sensorCount"],
+          [Sequelize.fn("COUNT", Sequelize.fn("DISTINCT", Sequelize.col("controlDevices.id"))), "deviceCount"]
+        ] : []
+      },
+      include: includeCount ? [
+        {
+          model: Sensor,
+          as: "sensors", 
+          attributes: [],
+          required: false
+        },
+        {
+          model: ControlDevice, 
+          as: "controlDevices", 
+          attributes: [],
+          required: false
+        },
+        {
+          model: Culture,
+          as: "culture",
+          attributes: ["name"],
+        }
+      ] : [],
+      group: includeCount ? ["GreenHouse.id"] : undefined,
+      // order: [['name', 'ASC']]
     });
     
     return res.status(200).json(greenhouses);
@@ -34,7 +60,6 @@ exports.getAllGreenhouses = async (req, res) => {
   }
 };
 
-// Get a specific greenhouse by ID
 exports.getGreenhouseById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -45,13 +70,22 @@ exports.getGreenhouseById = async (req, res) => {
         id: id,
         isActive: true 
       },
-      include: [{
-        model: Location,
-        where: { 
-          userId: userId,
-          isActive: true 
+      include: [
+        {
+          model: Location,
+          as: "location",
+          where: { 
+            userId: userId,
+            isActive: true 
+          },
+          attributes: [],
+        },
+        {
+          model: Culture,
+          as: "culture",
+          attributes: ["name"],
         }
-      }]
+      ]
     });
     
     if (!greenhouse) {
@@ -106,9 +140,8 @@ exports.updateGreenhouse = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, type, status, isActive, userId } = req.body;
-    // const userId = req.user?.id;
+    const authUserId = req.user?.id;
     
-    // First find the greenhouse and check if it belongs to a location owned by the user
     const greenhouse = await GreenHouse.findOne({
       where: { 
         id: id
@@ -116,7 +149,7 @@ exports.updateGreenhouse = async (req, res) => {
       include: [{
         model: Location,
         where: { 
-          userId: userId,
+          userId: authUserId,
           isActive: true 
         }
       }]
@@ -158,6 +191,7 @@ exports.partialUpdateGreenhouse = async (req, res) => {
       },
       include: [{
         model: Location,
+        as: "location",
         where: { 
           userId: userId,
           isActive: true 
@@ -170,7 +204,7 @@ exports.partialUpdateGreenhouse = async (req, res) => {
     }
     
     // List of allowed fields that can be updated
-    const allowedUpdates = ['name', 'type', 'status', 'isActive'];
+    const allowedUpdates = ['name', 'status', 'isActive', 'cultureId', 'lastVisited', 'locationId'];
     const requestedUpdates = Object.keys(updates);
     
     // Validate updates
@@ -198,7 +232,7 @@ exports.partialUpdateGreenhouse = async (req, res) => {
   }
 };
 
-// "Delete" a greenhouse (soft delete by setting isActive to false)
+
 exports.deleteGreenhouse = async (req, res) => {
   try {
     const { id } = req.params;

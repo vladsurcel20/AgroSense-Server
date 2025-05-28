@@ -12,19 +12,35 @@ const Culture = sequelize.define("Culture", {
         type: DataTypes.STRING(50),
         allowNull: false,
     },
-    minTemp: {
+    minTempAir: {
         type: DataTypes.FLOAT,
         allowNull: false,
     },
-    maxTemp: {
+    maxTempAir: {
         type: DataTypes.FLOAT,
         allowNull: false,
     },
-    minHum: {
+    minTempSoil: {
         type: DataTypes.FLOAT,
         allowNull: false,
     },
-    maxHum: {
+    maxTempSoil: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+    },
+    minHumAir: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+    },
+    maxHumAir: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+    },
+    minHumSoil: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+    },
+    maxHumSoil: {
         type: DataTypes.FLOAT,
         allowNull: false,
     },
