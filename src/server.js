@@ -14,6 +14,7 @@ const deviceCommandRouter = require("./routes/deviceCommandRoutes");
 const cultureRouter = require("./routes/cultureRoutes");
 const wss = require("./services/wssService");
 const GreenhousePreference = require("./models/GreenhousePreference");
+const Sensor = require("./models/Sensor");
 
 
 dotenv.config();
@@ -39,7 +40,7 @@ wss.initialize(server);
 
 const syncDB = async () => {
     try {
-        await GreenhousePreference.sync({alter: true})
+        // await Sensor.sync({alter: true})
         await sequelize.sync();
         console.log("Database synchronized");
     } catch (error) {

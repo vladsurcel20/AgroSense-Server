@@ -48,7 +48,7 @@ exports.getSensors = async (req, res) => {
 exports.createSensor = async (req, res) => {
   try {
     const userId = req.user?.id;
-    const { name, type, greenhouseId, unit } = req.body; 
+    const { name, type, greenhouseId, unit, localization, height_cm, width_cm, length_cm, radius_cm} = req.body; 
 
     if (!name || !type || !greenhouseId || !unit) { 
       return res.status(400).json({ message: 'The required fields are missing' });
@@ -64,9 +64,14 @@ exports.createSensor = async (req, res) => {
     const sensor = await Sensor.create({
       name,
       type,
+      localization,
       unit,
       greenhouseId,
-      userId
+      userId,
+      height_cm, 
+      width_cm, 
+      length_cm, 
+      radius_cm
     });
 
     return res.status(201).json(sensor);
@@ -81,7 +86,7 @@ exports.updateSensor = async (req, res) => {
   try {
     const userId = req.user?.id;
     const { id } = req.params;
-    const { name, type, greenhouseId, localization, unit } = req.body; 
+    const { name, type, greenhouseId, unit, localization, height_cm, width_cm, length_cm, radius_cm} = req.body; 
 
     const sensor = await Sensor.findOne({ where: { id, userId } });
     if (!sensor) {
@@ -102,6 +107,10 @@ exports.updateSensor = async (req, res) => {
     if (type) sensor.type = type;
     if (localization) sensor.localization = localization;
     if (unit) sensor.unit = unit;
+    if (height_cm !== undefined) sensor.height_cm = height_cm;
+    if (width_cm !== undefined) sensor.width_cm = width_cm;
+    if (length_cm !== undefined) sensor.length_cm = length_cm;
+    if (radius_cm !== undefined) sensor.radius_cm = radius_cm;
 
     await sensor.save();
     return res.status(200).json(sensor);

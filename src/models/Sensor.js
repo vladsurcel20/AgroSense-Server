@@ -23,6 +23,18 @@ const Sensor = sequelize.define('Sensor', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    height_cm: {
+        type: DataTypes.INTEGER,
+    },
+    width_cm: {
+        type: DataTypes.INTEGER,
+    },
+    length_cm: {
+        type: DataTypes.INTEGER,
+    },
+    radius_cm: {
+        type: DataTypes.INTEGER,
+    },
     greenhouseId: {
         type: DataTypes.INTEGER,
         allowNull: true,
